@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+    machine: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "ad:30:19:e5:c4:9d:c5:62:ea:09:2b:97:b0:bb:d2:d4"
+      - run:
+          name: Clone main repo
+          working_directory: ~/workdir
+          command: |
+            git clone git@github.com:mikart143/meblex-api-wip.git            
+      - deploy:
+          name: Trigger dokku
+          working_directory: ~/workdir/meblex-api-wip
+          command: |
+            git remote add dokku dokku@157.230.99.2:meblex-api-wip
+            git push dokku master
