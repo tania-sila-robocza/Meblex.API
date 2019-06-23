@@ -279,7 +279,7 @@ namespace Meblex.API.Controller
 
         }
 
-//        [Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker")]
         [HttpPost("parts")]
         [SwaggerResponse(201, "" ,typeof(List<PartResponse>))]
         [SwaggerResponse(500)]
@@ -357,7 +357,7 @@ namespace Meblex.API.Controller
             var response = _furnitureService.GetAllFurniture();
             return StatusCode(200, response);
         }
-        [AllowAnonymous]
+//        [AllowAnonymous]
         [HttpGet("pieceOfFurniture/{id}")]
         [SwaggerResponse(200, "", typeof(FurnitureResponse))]
         [SwaggerResponse(404)]

@@ -8,10 +8,13 @@ using Meblex.API.DTO;
 using Meblex.API.FormsDto.Response;
 using Meblex.API.Helper;
 using Meblex.API.Interfaces;
+using Meblex.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Swagger;
+using Mapper = AgileObjects.AgileMapper.Mapper;
 
 namespace Meblex.API.Controller
 {
@@ -22,13 +25,14 @@ namespace Meblex.API.Controller
     [ApiController]
     public class AuthController: ControllerBase
     {
-
+        private readonly IStringLocalizer<AuthController> _localizer;
         private readonly IAuthService _authService;
         private readonly IJWTService _jwtService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public AuthController(IAuthService authService, IJWTService jwtService, IMapper mapper, IUserService userService)
+        public AuthController(IAuthService authService, IJWTService jwtService, IMapper mapper, IUserService userService, IStringLocalizer<AuthController> localizer)
         {
+            _localizer = localizer;
             _authService = authService;
             _jwtService = jwtService;
             _mapper = mapper;
@@ -48,14 +52,20 @@ namespace Meblex.API.Controller
         public async Task<IActionResult> Login([FromBody] UserLoginForm user)
         {
             var loginCheck = await _authService.CheckUser(user.Email, user.Password);
-            if (!loginCheck) throw new HttpStatusCodeException(HttpStatusCode.Unauthorized, "Wrong password and/or email");
+            if (!loginCheck) throw new HttpStatusCodeException(HttpStatusCode.Unauthorized, _localizer["Wrong password or email"]);
 
             var accessToken = await _authService.GetAccessToken(user.Email, user.Password);
             var refreshToken = await _authService.GetRefreshToken(user.Email, user.Password);
             var userData = await _userService.GetUserData(user.Email);
 
             
-            var response = _mapper.Map<AuthLoginResponse>(userData);
+            var response = new AuthLoginResponse();
+            response.Address = userData.Address;
+            response.City = userData.City;
+            response.Name = userData.Name;
+            response.NIP = userData.NIP == null ? (int?) null : int.Parse(userData.NIP);
+            response.PostCode = userData.PostCode;
+            response.State = userData.State;
             response.AccessToken = accessToken;
             response.RefreshToken = refreshToken;
             response.Email = user.Email;

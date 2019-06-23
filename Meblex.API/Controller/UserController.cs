@@ -40,9 +40,7 @@ namespace Meblex.API.Controller
         {
             var id = _jwtService.GetAccessTokenUserId(User);
             var clientId = await _clientService.GetClientIdFromUserId(id);
-//            var client = _mapper.Map<ClientUpdateDto>(userUpdateForm);
             var client = Mapper.Map(userUpdateForm).ToANew<ClientUpdateDto>();
-            
 
             var isUpdated = await _clientService.UpdateClientData(client, clientId);
 

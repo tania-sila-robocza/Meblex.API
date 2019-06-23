@@ -55,8 +55,9 @@ namespace Meblex.API
             services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IPhotoService, PhotoService>();
             services.AddTransient<IFurnitureService, FurnitureService>();
-            services.AddTransient<IFitterService, FitterService>();
             services.AddTransient<IShoppingCartService, ShoppingCartService>();
+            services.AddTransient<ICustomSizeService, CustomSizeService>();
+
 
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -112,7 +113,7 @@ namespace Meblex.API
             ValidatorOptions.CascadeMode = CascadeMode.Continue;
             ValidatorOptions.LanguageManager.Enabled = true;
             services.AddOData();
-            
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc(options =>
                 {
                     foreach (var outputFormatter in options.OutputFormatters.OfType<ODataOutputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
